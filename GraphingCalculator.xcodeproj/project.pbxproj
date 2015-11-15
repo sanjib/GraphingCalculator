@@ -13,6 +13,7 @@
 		2090A4E71BF8832B006C0EAF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2090A4E51BF8832B006C0EAF /* LaunchScreen.storyboard */; };
 		2090A4F01BF88374006C0EAF /* CalculatorBrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2090A4EE1BF88374006C0EAF /* CalculatorBrain.swift */; };
 		2090A4F11BF88374006C0EAF /* CalculatorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2090A4EF1BF88374006C0EAF /* CalculatorViewController.swift */; };
+		2090A4F31BF884C3006C0EAF /* AxesDrawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2090A4F21BF884C3006C0EAF /* AxesDrawer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		2090A4E81BF8832B006C0EAF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2090A4EE1BF88374006C0EAF /* CalculatorBrain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalculatorBrain.swift; sourceTree = "<group>"; };
 		2090A4EF1BF88374006C0EAF /* CalculatorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalculatorViewController.swift; sourceTree = "<group>"; };
+		2090A4F21BF884C3006C0EAF /* AxesDrawer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AxesDrawer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 				2090A4EE1BF88374006C0EAF /* CalculatorBrain.swift */,
 				2090A4EF1BF88374006C0EAF /* CalculatorViewController.swift */,
 				2090A4E01BF8832B006C0EAF /* Main.storyboard */,
+				2090A4F21BF884C3006C0EAF /* AxesDrawer.swift */,
 				2090A4E31BF8832B006C0EAF /* Assets.xcassets */,
 				2090A4E51BF8832B006C0EAF /* LaunchScreen.storyboard */,
 				2090A4E81BF8832B006C0EAF /* Info.plist */,
@@ -139,6 +142,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2090A4F01BF88374006C0EAF /* CalculatorBrain.swift in Sources */,
+				2090A4F31BF884C3006C0EAF /* AxesDrawer.swift in Sources */,
 				2090A4F11BF88374006C0EAF /* CalculatorViewController.swift in Sources */,
 				2090A4DD1BF8832B006C0EAF /* AppDelegate.swift in Sources */,
 			);
@@ -290,6 +294,7 @@
 				2090A4ED1BF8832B006C0EAF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
