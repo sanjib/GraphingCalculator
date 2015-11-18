@@ -17,10 +17,10 @@ class CalculatorViewController: UIViewController {
         static let Error = "Error!"
     }
     
-    var userIsInTheMiddleOfTypingANumber = false
+    private var userIsInTheMiddleOfTypingANumber = false
     private let defaultHistoryText = " "
     
-    var brain = CalculatorBrain()
+    private var brain = CalculatorBrain()
 
     @IBAction func clear() {
         brain.clearStack()
@@ -98,9 +98,12 @@ class CalculatorViewController: UIViewController {
         }
     }
     
-    // Because displayValue is now an Optional Double the task of showing a suitable (result, zero, error)
-    // display text can be safely handed over to the setter of displayValue. Additionally history is also 
-    // now assigned in the setter
+    @IBAction func enter() {
+        userIsInTheMiddleOfTypingANumber = false
+        if displayValue != nil {
+            displayResult = brain.pushOperand(displayValue!)
+        }
+    }
     
     private var displayValue: Double? {
         if let displayValue = NSNumberFormatter().numberFromString(display.text!) {
@@ -109,7 +112,7 @@ class CalculatorViewController: UIViewController {
         return nil
     }
     
-    var displayResult: CalculatorBrainEvaluationResult? {
+    private var displayResult: CalculatorBrainEvaluationResult? {
         get {
             if let displayValue = displayValue {
                 return .Success(displayValue)
@@ -137,13 +140,6 @@ class CalculatorViewController: UIViewController {
             } else {
                 history.text = defaultHistoryText
             }
-        }
-    }
-    
-    @IBAction func enter() {
-        userIsInTheMiddleOfTypingANumber = false
-        if displayValue != nil {
-            displayResult = brain.pushOperand(displayValue!)
         }
     }
     
