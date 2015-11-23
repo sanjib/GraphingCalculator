@@ -80,9 +80,9 @@ class CalculatorBrain {
     }
     
     // Describes contents of the brain (var opStack)
-    var description: String {
+    var description: [String] {
         let (descriptionArray, _) = description([String](), ops: opStack)
-        return descriptionArray.joinWithSeparator(", ")
+        return descriptionArray
     }
     
     init() {

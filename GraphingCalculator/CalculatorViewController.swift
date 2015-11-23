@@ -136,12 +136,25 @@ class CalculatorViewController: UIViewController {
             userIsInTheMiddleOfTypingANumber = false
             
             if !brain.description.isEmpty {
-                history.text = " \(brain.description) ="
+                history.text = " \(brain.description.joinWithSeparator(", ")) ="
             } else {
                 history.text = defaultHistoryText
             }
         }
     }
     
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        var destination: UIViewController? = segue.destinationViewController
+        if let navCon = destination as? UINavigationController {
+            destination = navCon.visibleViewController
+        }
+        if let gvc = destination as? GraphingViewController {
+            gvc.program = brain.program
+            if let graphLabel = brain.description.last {
+                gvc.graphLabel = graphLabel
+            }
+        }
+    }
+
 }
 
