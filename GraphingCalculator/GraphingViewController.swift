@@ -13,12 +13,7 @@ class GraphingViewController: UIViewController, GraphingViewDataSource {
         didSet { graphingView.dataSource = self }
     }
     
-    var program: AnyObject? {
-        didSet {
-            print("program: \(program)")
-        }
-    }
-    
+    var program: AnyObject?
     var graphLabel: String? {
         didSet {
             title = graphLabel
@@ -26,22 +21,8 @@ class GraphingViewController: UIViewController, GraphingViewDataSource {
     }
     
     func graphPlot(sender: GraphingView) -> [(x: Double, y: Double)]? {
-//        print(sender.bounds)
-        let minX = -(sender.bounds.width - (sender.bounds.width - sender.graphCenter.x))
-//        let minY = -(sender.bounds.height - sender.graphCenter.y)
-        let maxX = sender.bounds.width - sender.graphCenter.x
-//        let maxY = sender.bounds.height - (sender.bounds.height - sender.graphCenter.y)
-        
-//        print("bounds: \(sender.bounds)")
-//        print("minX: \(minX), minY: \(minY), maxX: \(maxX), maxY: \(maxY)")
-
-        let minXRadian = minX / (sender.pointsPerUnit * sender.scale) / view.contentScaleFactor
-        let minXDegree = Double(minXRadian) * (180 / M_PI)
-//        print(minXDegree)
-        
-        let maxXRadian = maxX / (sender.pointsPerUnit * sender.scale) / view.contentScaleFactor
-        let maxXDegree = Double(maxXRadian) * (180 / M_PI)
-//        print(maxXDegree)
+        let minXDegree = Double(sender.minX) * (180 / M_PI)
+        let maxXDegree = Double(sender.maxX) * (180 / M_PI)
         
         var plots = [(x: Double, y: Double)]()
         let brain = CalculatorBrain()
@@ -60,8 +41,7 @@ class GraphingViewController: UIViewController, GraphingViewDataSource {
                     }
                 default: break
                 }
-            }
-            
+            }            
         }
         return plots
     }

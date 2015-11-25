@@ -29,6 +29,23 @@ class GraphingView: UIView {
         }
         return convertPoint(center, fromView: superview)
     }
+    
+    var minX: CGFloat {
+        let minXBound = -(bounds.width - (bounds.width - graphCenter.x))
+        return minXBound / (pointsPerUnit * scale)
+    }
+    var minY: CGFloat {
+        let minYBound = -(bounds.height - graphCenter.y)
+        return minYBound / (pointsPerUnit * scale)
+    }
+    var maxX: CGFloat {
+        let maxXBound = bounds.width - graphCenter.x
+        return maxXBound / (pointsPerUnit * scale)
+    }
+    var maxY: CGFloat {
+        let maxYBound = bounds.height - (bounds.height - graphCenter.y)
+        return maxYBound / (pointsPerUnit * scale)
+    }
 
     private func translatePlot(plot: (x: Double, y: Double)) -> CGPoint {
         let translatedX = CGFloat(plot.x) * pointsPerUnit * scale + graphCenter.x
