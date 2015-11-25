@@ -27,22 +27,19 @@ class GraphingViewController: UIViewController, GraphingViewDataSource {
         var plots = [(x: Double, y: Double)]()
         let brain = CalculatorBrain()
         
-        for i in Int(minXDegree)...Int(maxXDegree) {
-            let radian = Double(i) * (M_PI / 180)
-            
-            if program != nil {
-                brain.program = program!
+        if let program = program {
+            brain.program = program
+            for i in Int(minXDegree)...Int(maxXDegree) {
+                let radian = Double(i) * (M_PI / 180)
                 brain.variableValues["M"] = radian
                 let evaluationResult = brain.evaluateAndReportErrors()
                 switch evaluationResult {
-                case let .Success(y):
-                    if y.isNormal || y.isZero {
-                        plots.append((x: radian, y: y))
-                    }
+                case let .Success(y): if y.isNormal || y.isZero { plots.append((x: radian, y: y)) }
                 default: break
                 }
-            }            
+            }
         }
+        
         return plots
     }
     
