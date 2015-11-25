@@ -46,6 +46,9 @@ class GraphingView: UIView {
         let maxYBound = bounds.height - (bounds.height - graphCenter.y)
         return maxYBound / (pointsPerUnit * scale)
     }
+    var availablePixelsInXAxis: Double {
+        return Double(bounds.width * contentScaleFactor)
+    }
 
     private func translatePlot(plot: (x: Double, y: Double)) -> CGPoint {
         let translatedX = CGFloat(plot.x) * pointsPerUnit * scale + graphCenter.x

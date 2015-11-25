@@ -29,12 +29,24 @@ class GraphingViewController: UIViewController, GraphingViewDataSource {
         
         if let program = program {
             brain.program = program
-            for i in Int(minXDegree)...Int(maxXDegree) {
+            
+            // Performance fix to remove sluggish behavior (specially when screen is zoomed out):
+            // a. the difference between minXDegree and maxXDegree will be high
+            // b. the screen width has a fixed number of pixels, so we need to iterate only
+            //    for the number of available pixels
+            // c. loopIncrementSize ensures that the count of var plots will always be fixed to
+            //    the number of available pixels for screen width
+            let loopIncrementSize = (maxXDegree - minXDegree) / sender.availablePixelsInXAxis
+            
+            for (var i = minXDegree; i <= maxXDegree; i = i + loopIncrementSize) {
                 let radian = Double(i) * (M_PI / 180)
                 brain.variableValues["M"] = radian
                 let evaluationResult = brain.evaluateAndReportErrors()
                 switch evaluationResult {
-                case let .Success(y): if y.isNormal || y.isZero { plots.append((x: radian, y: y)) }
+                case let .Success(y):
+                    if y.isNormal || y.isZero {
+                        plots.append((x: radian, y: y))
+                    }
                 default: break
                 }
             }
