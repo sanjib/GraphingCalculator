@@ -30,6 +30,28 @@ class GraphingView: UIView {
         return convertPoint(center, fromView: superview)
     }
     
+    typealias PropertyList = [String: String]
+    var scaleAndOrigin: PropertyList {
+        get {
+            let origin = (graphOrigin != nil) ? graphOrigin! : center
+            return [
+                "scale": "\(scale)",
+                "graphOriginX": "\(origin.x)",
+                "graphOriginY": "\(origin.y)"
+            ]
+        }
+        set {
+            if let scale = newValue["scale"], graphOriginX = newValue["graphOriginX"], graphOriginY = newValue["graphOriginY"] {
+                if let scale = NSNumberFormatter().numberFromString(scale) {
+                    self.scale = CGFloat(scale)
+                }
+                if let graphOriginX = NSNumberFormatter().numberFromString(graphOriginX), graphOriginY = NSNumberFormatter().numberFromString(graphOriginY) {
+                    self.graphOrigin = CGPoint(x: CGFloat(graphOriginX), y: CGFloat(graphOriginY))
+                }                
+            }
+        }
+    }
+    
     var minX: CGFloat {
         let minXBound = -(bounds.width - (bounds.width - graphCenter.x))
         return minXBound / (pointsPerUnit * scale)

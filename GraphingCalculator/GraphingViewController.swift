@@ -9,8 +9,17 @@
 import UIKit
 
 class GraphingViewController: UIViewController, GraphingViewDataSource {
+    private struct Constants {
+        static let ScaleAndOrigin = "scaleAndOrigin"
+    }
+    
     @IBOutlet weak var graphingView: GraphingView! {
-        didSet { graphingView.dataSource = self }
+        didSet {
+            graphingView.dataSource = self
+            if let scaleAndOrigin = NSUserDefaults.standardUserDefaults().objectForKey(Constants.ScaleAndOrigin) as? [String: String] {
+                graphingView.scaleAndOrigin = scaleAndOrigin
+            }
+        }
     }
     
     var program: AnyObject?
@@ -58,6 +67,9 @@ class GraphingViewController: UIViewController, GraphingViewDataSource {
     @IBAction func zoomGraph(gesture: UIPinchGestureRecognizer) {
         if gesture.state == .Changed {
             graphingView.scale *= gesture.scale
+            
+            // save the scale
+            saveScaleAndOrigin()
             gesture.scale = 1
         }
     }
@@ -78,6 +90,9 @@ class GraphingViewController: UIViewController, GraphingViewDataSource {
                     y: graphingView.graphOrigin!.y + translation.y)
             }
             
+            // save the graphOrigin
+            saveScaleAndOrigin()
+            
             // set back to zero, otherwise will be cumulative
             gesture.setTranslation(CGPointZero, inView: graphingView)
         default: break
@@ -86,9 +101,18 @@ class GraphingViewController: UIViewController, GraphingViewDataSource {
     
     @IBAction func moveOrigin(gesture: UITapGestureRecognizer) {
         switch gesture.state {
-        case .Ended: graphingView.graphOrigin = gesture.locationInView(view)
+        case .Ended:
+            graphingView.graphOrigin = gesture.locationInView(view)
+            
+            // save the graphOrigin
+            saveScaleAndOrigin()
         default: break
         }
+    }
+    
+    private func saveScaleAndOrigin() {
+        NSUserDefaults.standardUserDefaults().setObject(graphingView.scaleAndOrigin, forKey: Constants.ScaleAndOrigin)
+        NSUserDefaults.standardUserDefaults().synchronize()
     }
     
 }
