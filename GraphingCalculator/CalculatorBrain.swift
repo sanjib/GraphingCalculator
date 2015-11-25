@@ -70,7 +70,8 @@ class CalculatorBrain {
                         newOpStack.append(op)
                     } else if let operand = NSNumberFormatter().numberFromString(opSymbol)?.doubleValue {
                         newOpStack.append(.Operand(operand))
-                    } else if variableValues[opSymbol] != nil {
+//                    } else if variableValues[opSymbol] != nil {
+                    } else {
                         newOpStack.append(.Variable(opSymbol))
                     }
                 }
@@ -92,11 +93,15 @@ class CalculatorBrain {
         learnOp(Op.UnaryOperation("√", sqrt))
         learnOp(Op.UnaryOperation("sin", sin))
         learnOp(Op.UnaryOperation("cos", cos))
+        learnOp(Op.UnaryOperation("tan", tan))
+        learnOp(Op.UnaryOperation("log₁₀", log10))
+        learnOp(Op.UnaryOperation("ln", log))
         learnOp(Op.UnaryOperation("ᐩ/-") { -$0 })
         learnOp(Op.BinaryOperation("×", *))
         learnOp(Op.BinaryOperation("+", +))
         learnOp(Op.BinaryOperation("÷") { $1 / $0 })
         learnOp(Op.BinaryOperation("−") { $1 - $0 })
+        learnOp(Op.BinaryOperation("pow") { pow($1, $0) })
         learnOp(Op.Constant("π", M_PI))
     }
     
@@ -181,8 +186,11 @@ class CalculatorBrain {
     }
     
     private func evaluate() -> Double? {
-        let (result, remainder) = evaluate(opStack)
-        print("\(opStack) = \(result) with \(remainder) left over")
+        let (result, _) = evaluate(opStack)
+        
+//        let (result, remainder) = evaluate(opStack)
+//        print("\(opStack) = \(result) with \(remainder) left over")
+        
         return result
     }
     

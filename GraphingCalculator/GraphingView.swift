@@ -9,18 +9,19 @@
 import UIKit
 
 protocol GraphingViewDataSource: class {
-    func graphPlot(sender: GraphingView) -> [Double]?
+    func graphPlot(sender: GraphingView) -> [(x: Double, y: Double)]?
 }
 
 @IBDesignable
 class GraphingView: UIView {
     weak var dataSource: GraphingViewDataSource?
     
-    @IBInspectable var color: UIColor = UIColor.blueColor() { didSet { setNeedsDisplay() } }
-    @IBInspectable var scale: CGFloat = 1.0                 { didSet { setNeedsDisplay() } }
-    @IBInspectable var graphOrigin: CGPoint?                { didSet { setNeedsDisplay() } }
+    @IBInspectable var axesColor: UIColor = UIColor.blueColor() { didSet { setNeedsDisplay() } }
+    @IBInspectable var plotColor: UIColor = UIColor.redColor()  { didSet { setNeedsDisplay() } }
+    @IBInspectable var scale: CGFloat = 1.0                     { didSet { setNeedsDisplay() } }
+    @IBInspectable var graphOrigin: CGPoint?                    { didSet { setNeedsDisplay() } }
     
-    private let pointsPerUnit: CGFloat = 50.0
+    let pointsPerUnit: CGFloat = 50.0
     
     var graphCenter: CGPoint {
         if graphOrigin != nil {
@@ -29,9 +30,29 @@ class GraphingView: UIView {
         return convertPoint(center, fromView: superview)
     }
 
+    private func translatePlot(plot: (x: Double, y: Double)) -> CGPoint {
+        let translatedX = CGFloat(plot.x) * pointsPerUnit * scale + graphCenter.x
+        let translatedY = CGFloat(-plot.y) * pointsPerUnit * scale + graphCenter.y
+        return CGPoint(x: translatedX, y: translatedY)
+    }
+    
     override func drawRect(rect: CGRect) {
-        let axes = AxesDrawer(color: color, contentScaleFactor: contentScaleFactor)
-        axes.drawAxesInRect(bounds, origin: graphCenter, pointsPerUnit: pointsPerUnit*scale)        
+        let axes = AxesDrawer(color: axesColor, contentScaleFactor: contentScaleFactor)
+        axes.drawAxesInRect(bounds, origin: graphCenter, pointsPerUnit: pointsPerUnit*scale)
+        
+        let bezierPath = UIBezierPath()
+        
+        if var plots = dataSource?.graphPlot(self) where plots.first != nil {
+            bezierPath.moveToPoint(translatePlot((x: plots.first!.x, y: plots.first!.y)))
+            plots.removeFirst()
+            for plot in plots {
+                bezierPath.addLineToPoint(translatePlot((x: plot.x, y: plot.y)))
+            }
+        }
+        
+        plotColor.set()
+        bezierPath.stroke()
+        
     }
 
 }

@@ -9,23 +9,61 @@
 import UIKit
 
 class GraphingViewController: UIViewController, GraphingViewDataSource {
-    @IBOutlet weak var graphingView: GraphingView!
+    @IBOutlet weak var graphingView: GraphingView! {
+        didSet { graphingView.dataSource = self }
+    }
     
     var program: AnyObject? {
         didSet {
-            print(program)
+            print("program: \(program)")
         }
     }
     
     var graphLabel: String? {
         didSet {
-            print(graphLabel)
+            title = graphLabel
         }
     }
     
-    func graphPlot(sender: GraphingView) -> [Double]? {
+    func graphPlot(sender: GraphingView) -> [(x: Double, y: Double)]? {
+//        print(sender.bounds)
+        let minX = -(sender.bounds.width - (sender.bounds.width - sender.graphCenter.x))
+//        let minY = -(sender.bounds.height - sender.graphCenter.y)
+        let maxX = sender.bounds.width - sender.graphCenter.x
+//        let maxY = sender.bounds.height - (sender.bounds.height - sender.graphCenter.y)
         
-        return nil
+//        print("bounds: \(sender.bounds)")
+//        print("minX: \(minX), minY: \(minY), maxX: \(maxX), maxY: \(maxY)")
+
+        let minXRadian = minX / (sender.pointsPerUnit * sender.scale) / view.contentScaleFactor
+        let minXDegree = Double(minXRadian) * (180 / M_PI)
+//        print(minXDegree)
+        
+        let maxXRadian = maxX / (sender.pointsPerUnit * sender.scale) / view.contentScaleFactor
+        let maxXDegree = Double(maxXRadian) * (180 / M_PI)
+//        print(maxXDegree)
+        
+        var plots = [(x: Double, y: Double)]()
+        let brain = CalculatorBrain()
+        
+        for i in Int(minXDegree)...Int(maxXDegree) {
+            let radian = Double(i) * (M_PI / 180)
+            
+            if program != nil {
+                brain.program = program!
+                brain.variableValues["M"] = radian
+                let evaluationResult = brain.evaluateAndReportErrors()
+                switch evaluationResult {
+                case let .Success(y):
+                    if y.isNormal || y.isZero {
+                        plots.append((x: radian, y: y))
+                    }
+                default: break
+                }
+            }
+            
+        }
+        return plots
     }
     
     @IBAction func zoomGraph(gesture: UIPinchGestureRecognizer) {
