@@ -8,7 +8,7 @@
 
 import UIKit
 
-class GraphingViewController: UIViewController, GraphingViewDataSource {
+class GraphingViewController: UIViewController, GraphingViewDataSource, UIPopoverPresentationControllerDelegate {
     private struct Constants {
         static let ScaleAndOrigin = "scaleAndOrigin"
     }
@@ -121,14 +121,11 @@ class GraphingViewController: UIViewController, GraphingViewDataSource {
     // calcualtion also makes a subtle adjustment based on the ratio of the height and with change
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         
-        var xDistanceFromCenter: CGFloat
-        var yDistanceFromCenter: CGFloat
+        var xDistanceFromCenter: CGFloat = 0
+        var yDistanceFromCenter: CGFloat = 0
         if let graphOrigin = graphingView.graphOrigin {
             xDistanceFromCenter = graphingView.center.x - graphOrigin.x
             yDistanceFromCenter = graphingView.center.y - graphOrigin.y
-        } else {
-            xDistanceFromCenter = graphingView.center.x
-            yDistanceFromCenter = graphingView.center.y
         }
         
         let widthBeforeRotation = graphingView.bounds.width
@@ -147,6 +144,28 @@ class GraphingViewController: UIViewController, GraphingViewDataSource {
                 y: self.graphingView.center.y - (yDistanceFromCenter * heightChangeRatio)
             )
         }
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if let identifier = segue.identifier {
+            switch identifier {
+            case "Show Stats":
+                if let svc = segue.destinationViewController as? GraphStatisticsViewController {
+                    if let ppc = svc.popoverPresentationController {
+                        ppc.delegate = self
+                    }
+                    svc.stats  = "min-X: \(graphingView.minX)\n"
+                    svc.stats += "max-X: \(graphingView.maxX)\n"
+                    svc.stats += "min-Y: \(graphingView.minY)\n"
+                    svc.stats += "max-Y: \(graphingView.maxY)"
+                }
+            default: break
+            }
+        }
+    }
+    
+    func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
+        return UIModalPresentationStyle.None
     }
     
 }
