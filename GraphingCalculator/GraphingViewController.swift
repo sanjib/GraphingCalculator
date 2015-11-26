@@ -16,7 +16,7 @@ class GraphingViewController: UIViewController, GraphingViewDataSource {
     @IBOutlet weak var graphingView: GraphingView! {
         didSet {
             graphingView.dataSource = self
-            if let scaleAndOrigin = NSUserDefaults.standardUserDefaults().objectForKey(Constants.ScaleAndOrigin) as? [String: String] {
+            if let scaleAndOrigin = userDefaults.objectForKey(Constants.ScaleAndOrigin) as? [String: String] {
                 graphingView.scaleAndOrigin = scaleAndOrigin
             }
         }
@@ -28,6 +28,7 @@ class GraphingViewController: UIViewController, GraphingViewDataSource {
             title = graphLabel
         }
     }
+    private let userDefaults = NSUserDefaults.standardUserDefaults()
     
     func graphPlot(sender: GraphingView) -> [(x: Double, y: Double)]? {
         let minXDegree = Double(sender.minX) * (180 / M_PI)
@@ -40,7 +41,7 @@ class GraphingViewController: UIViewController, GraphingViewDataSource {
             brain.program = program
             
             // Performance fix to remove sluggish behavior (specially when screen is zoomed out):
-            // a. the difference between minXDegree and maxXDegree will be high
+            // a. the difference between minXDegree and maxXDegree will be high when zoomed out
             // b. the screen width has a fixed number of pixels, so we need to iterate only
             //    for the number of available pixels
             // c. loopIncrementSize ensures that the count of var plots will always be fixed to
@@ -111,8 +112,41 @@ class GraphingViewController: UIViewController, GraphingViewDataSource {
     }
     
     private func saveScaleAndOrigin() {
-        NSUserDefaults.standardUserDefaults().setObject(graphingView.scaleAndOrigin, forKey: Constants.ScaleAndOrigin)
-        NSUserDefaults.standardUserDefaults().synchronize()
+        userDefaults.setObject(graphingView.scaleAndOrigin, forKey: Constants.ScaleAndOrigin)
+        userDefaults.synchronize()
+    }
+    
+    // Detect device rotation and adjust origin to center instead of upper-left:
+    // if graph origin is far off center, then rotation change might move it off-screen so
+    // calcualtion also makes a subtle adjustment based on the ratio of the height and with change
+    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        
+        var xDistanceFromCenter: CGFloat
+        var yDistanceFromCenter: CGFloat
+        if let graphOrigin = graphingView.graphOrigin {
+            xDistanceFromCenter = graphingView.center.x - graphOrigin.x
+            yDistanceFromCenter = graphingView.center.y - graphOrigin.y
+        } else {
+            xDistanceFromCenter = graphingView.center.x
+            yDistanceFromCenter = graphingView.center.y
+        }
+        
+        let widthBeforeRotation = graphingView.bounds.width
+        let heightBeforeRotation = graphingView.bounds.height
+        
+        coordinator.animateAlongsideTransition(nil) { context in
+            
+            let widthAfterRotation = self.graphingView.bounds.width
+            let heightAfterRotation = self.graphingView.bounds.height
+            
+            let widthChangeRatio = widthAfterRotation / widthBeforeRotation
+            let heightChangeRatio = heightAfterRotation / heightBeforeRotation
+
+            self.graphingView.graphOrigin = CGPoint(
+                x: self.graphingView.center.x - (xDistanceFromCenter * widthChangeRatio),
+                y: self.graphingView.center.y - (yDistanceFromCenter * heightChangeRatio)
+            )
+        }
     }
     
 }
